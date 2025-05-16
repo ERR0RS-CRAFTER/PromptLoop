@@ -1,42 +1,3 @@
-# PromptLoop
-
-AI prompt marketplace for tools like ChatGPT, Midjourney, and more.
-
-## Overview
-
-PromptLoop is a social network and search engine for high-quality AI prompts. It allows users to discover, share, and rate prompts for various AI tools.
-
-## Features
-
-- Discover and search for AI prompts
-- Submit your own prompts
-- Rate and comment on prompts
-- Browse by AI tool or category
-- User authentication
-- Dark/light theme support
-- Responsive design
-
-## Tech Stack
-
-- Frontend: Next.js 14, TypeScript, Tailwind CSS
-- Backend: Supabase (PostgreSQL + Authentication)
-- Deployment: Vercel
-
-## Getting Started
-
-1. Clone the repository
-2. Install dependencies with `npm install`
-3. Create a `.env.local` file with your Supabase credentials
-4. Run the development server with `npm run dev`
-
-See `SUPABASE-SETUP.md` for detailed instructions on setting up the backend.
-
-## Database Setup
-
-1. Create a new project in [Supabase](https://supabase.com)
-2. Set up the database schema using the following SQL:
-
-```sql
 -- Create tables
 CREATE TABLE users (
   id UUID PRIMARY KEY,
@@ -112,46 +73,29 @@ CREATE POLICY "Users can update their own prompts." ON prompts
 CREATE POLICY "Users can delete their own prompts." ON prompts
   FOR DELETE USING (auth.uid() = user_id);
 
--- Similar policies for votes and comments
-```
+CREATE POLICY "Users can vote on prompts." ON votes
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-3. Enable Authentication in your Supabase project.
-4. Set up Email Sign-In and GitHub OAuth providers.
+CREATE POLICY "Users can update their own votes." ON votes
+  FOR UPDATE USING (auth.uid() = user_id);
 
-## Deployment
+CREATE POLICY "Users can delete their own votes." ON votes
+  FOR DELETE USING (auth.uid() = user_id);
 
-### Deploy to Vercel
+CREATE POLICY "Public votes are viewable by everyone." ON votes
+  FOR SELECT USING (true);
 
-1. Push your project to GitHub.
-2. Create a new project on [Vercel](https://vercel.com).
-3. Connect your GitHub repository.
-4. Set the environment variables:
-   - `NEXT_PUBLIC_SUPABASE_URL`
-   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-5. Deploy!
+CREATE POLICY "Users can comment on prompts." ON comments
+  FOR INSERT WITH CHECK (auth.uid() = user_id);
 
-## Roadmap
+CREATE POLICY "Users can update their own comments." ON comments
+  FOR UPDATE USING (auth.uid() = user_id);
 
-- [ ] Implement user dashboard
-- [ ] Add prompt analytics
-- [ ] Implement admin panel for content moderation
-- [ ] Add Stripe integration for premium features
-- [ ] Add notification system
+CREATE POLICY "Users can delete their own comments." ON comments
+  FOR DELETE USING (auth.uid() = user_id);
 
-## Contributing
+CREATE POLICY "Public comments are viewable by everyone." ON comments
+  FOR SELECT USING (true);
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## Acknowledgments
-
-- Next.js team for the amazing framework
-- Supabase team for the easy-to-use backend
-- Tailwind CSS team for the beautiful styling
-
----
-
-Built with ❤️ for the AI community
+CREATE POLICY "Ads are viewable by everyone." ON ads
+  FOR SELECT USING (true); 
